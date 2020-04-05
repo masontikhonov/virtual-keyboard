@@ -8,6 +8,7 @@ renderApp();
 const output = [];
 const functionalKeys = /Escape|CapsLock|Shift|Control|Alt|ContextMenu/;
 let currentCursorPosition = 0;
+let capsLockState = 0;
 
 const preventDefault = (event) => {
   event.preventDefault();
@@ -75,6 +76,15 @@ const makeUnshift = () => {
   }
 };
 
+const changeCapsLockState = () => {
+  capsLockState = (capsLockState === 0) ? 1 : 0;
+  if (capsLockState) {
+    makeShift();
+  } else {
+    makeUnshift();
+  }
+};
+
 const changeCursorPosition = (action, number) => {
   if (action === 'reduce' && currentCursorPosition > 0) {
     currentCursorPosition -= number;
@@ -97,6 +107,7 @@ const changeOutput = (event) => {
   if (event.type === 'keydown') {
     const key = event.code;
     const shiftState = +event.shiftKey;
+    const charShiftType = Math.abs(capsLockState - shiftState);
     const selStart = document.querySelector('textarea').selectionStart;
     const selEnd = document.querySelector('textarea').selectionEnd;
     const sel = selEnd - selStart;
@@ -137,7 +148,7 @@ const changeOutput = (event) => {
           changeCursorPosition('increase', 1);
           break;
         default:
-          output.splice(selStart, sel, currentLayout[key][shiftState]);
+          output.splice(selStart, sel, currentLayout[key][charShiftType]);
           document.querySelector('textarea').textContent = output.join('');
           changeCursorPosition('increase', 1);
       }
@@ -148,10 +159,10 @@ const changeOutput = (event) => {
   }
 };
 
-
 const keydown = (event) => {
   preventDefault(event);
-  if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') { makeShift(); }
+  if (event.code.includes('Shift') && !capsLockState) { makeShift(); }
+  if (event.code.includes('Shift') && capsLockState) { makeUnshift(); }
   if (event.code.includes('Arrow')) { changeCursorPosition(event.code); }
   makeActive(event);
   changeOutput(event);
@@ -159,12 +170,10 @@ const keydown = (event) => {
 
 const keyup = (event) => {
   preventDefault(event);
-  if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') { makeUnshift(); }
+  if (event.code.includes('Shift') && !capsLockState) { makeUnshift(); }
+  if (event.code.includes('Shift') && capsLockState) { makeShift(); }
+  if (event.code === 'CapsLock') { changeCapsLockState(); }
   makeNotActive(event);
-};
-
-const keypress = (event) => {
-  preventDefault(event);
 };
 
 const mouseDown = (event) => {
@@ -178,7 +187,6 @@ const mouseUp = (event) => {
 
 document.addEventListener('keydown', keydown);
 document.addEventListener('keyup', keyup);
-document.addEventListener('keypress', keypress);
-document.querySelector('textarea').addEventListener('click', (event) => { currentCursorPosition = document.querySelector('textarea').selectionStart; });
+document.querySelector('textarea').addEventListener('click', () => { currentCursorPosition = document.querySelector('textarea').selectionStart; });
 document.addEventListener('mousedown', mouseDown);
 document.addEventListener('mouseup', mouseUp);
