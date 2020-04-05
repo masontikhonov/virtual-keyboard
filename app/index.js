@@ -15,21 +15,7 @@ const preventDefault = (event) => {
 };
 
 const makeActive = (event) => {
-  switch (event.type) {
-    case 'keydown':
-      document.querySelector(`.${event.code}`).classList.add('active');
-      break;
-    case 'mousedown':
-      if (event.target.classList.contains('key')) {
-        event.target.classList.add('active');
-      }
-      if (event.target.classList.contains('shift') || event.target.classList.contains('unshift')) {
-        event.target.parentNode.classList.add('active');
-      }
-      break;
-    default:
-      break;
-  }
+  document.querySelector(`.${event.code}`).classList.add('active');
 };
 
 const makeNotActive = (event) => {
@@ -177,12 +163,11 @@ const keyup = (event) => {
 };
 
 const mouseDown = (event) => {
-  makeActive(event);
   changeOutput(event);
 };
 
 const mouseUp = (event) => {
-  makeNotActive(event);
+
 };
 
 document.addEventListener('keydown', keydown);

@@ -73,6 +73,11 @@ main #keyboard {
   cursor: pointer;
 }
 
+.key:active {
+  background-color: hotpink;
+  color: indigo;
+}
+
 #keyboard #main .row-1 {
   grid-template-columns: repeat(14, 1fr) 2.15fr;
 }
