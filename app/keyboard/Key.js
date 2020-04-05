@@ -10,10 +10,22 @@ export default class Key {
     keyHtml.classList.add('key', `${this.keyCode}`);
     const defaultValue = document.createElement('span');
     defaultValue.classList.add('unshift');
-    defaultValue.textContent = (this.keyCode === 'Tab') ? 'Tab' : this.defaultValue;
+    if (this.keyCode === 'Tab') {
+      defaultValue.textContent = 'Tab';
+    } else if (this.keyCode.includes('Enter')) {
+      defaultValue.textContent = 'Enter';
+    } else {
+      defaultValue.textContent = this.defaultValue;
+    }
     const shiftValue = document.createElement('span');
     shiftValue.classList.add('shift');
-    shiftValue.textContent = (this.keyCode === 'Tab') ? 'Tab' : this.shiftValue;
+    if (this.keyCode === 'Tab') {
+      shiftValue.textContent = 'Tab';
+    } else if (this.keyCode.includes('Enter')) {
+      shiftValue.textContent = 'Enter';
+    } else {
+      shiftValue.textContent = this.shiftValue;
+    }
     keyHtml.appendChild(defaultValue);
     keyHtml.appendChild(shiftValue);
     return keyHtml;

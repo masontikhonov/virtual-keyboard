@@ -169,8 +169,8 @@ export default {
       1: '\u0022',
     },
     Enter: {
-      0: 'Enter',
-      1: 'Enter',
+      0: '\n',
+      1: '\n',
     },
     ShiftLeft: {
       0: 'Shift',
@@ -321,8 +321,8 @@ export default {
       1: '\u002B',
     },
     NumpadEnter: {
-      0: 'Enter',
-      1: 'Enter',
+      0: '\n',
+      1: '\n',
     },
   },
   russian: {
