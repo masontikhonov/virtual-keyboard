@@ -8,6 +8,7 @@ renderApp();
 const output = [];
 const functionalKeys = /Escape|CapsLock|Shift|Control|Alt|ContextMenu/;
 let currentCursorPosition = 0;
+let shiftState = 0;
 let capsLockState = 0;
 
 const preventDefault = (event) => {
@@ -15,11 +16,11 @@ const preventDefault = (event) => {
 };
 
 const makeActive = (keyCode) => {
-  document.querySelector(`.${keyCode}`).classList.add('active');
+  document.querySelector(`#${keyCode}`).classList.add('active');
 };
 
 const makeNotActive = (keyCode) => {
-  document.querySelector(`.${keyCode}`).classList.remove('active');
+  document.querySelector(`#${keyCode}`).classList.remove('active');
 };
 
 const makeShift = () => {
@@ -33,6 +34,7 @@ const makeShift = () => {
     const element = shiftValues[i];
     element.classList.remove('hidden');
   }
+  shiftState = 1;
 };
 
 const makeUnshift = () => {
@@ -46,6 +48,7 @@ const makeUnshift = () => {
     const element = unshiftValues[i];
     element.classList.remove('hidden');
   }
+  shiftState = 0;
 };
 
 const changeCapsLockState = () => {
@@ -74,7 +77,7 @@ const changeCursorPosition = (action, number) => {
   }
 };
 
-const changeOutput = (keyCode, shiftState) => {
+const changeOutput = (keyCode) => {
   document.querySelector('textarea').focus();
   const charShiftType = Math.abs(capsLockState - shiftState);
   const selStart = document.querySelector('textarea').selectionStart;
@@ -126,7 +129,7 @@ const changeOutput = (keyCode, shiftState) => {
 
 const keydown = (event) => {
   const keyCode = event.code;
-  const shiftState = +event.shiftKey;
+  shiftState = +event.shiftKey;
   preventDefault(event);
   if (keyCode.includes('Shift') && !capsLockState) { makeShift(); }
   if (keyCode.includes('Shift') && capsLockState) { makeUnshift(); }
@@ -144,12 +147,43 @@ const keyup = (event) => {
   makeNotActive(keyCode);
 };
 
+const detectKeyCode = (event) => {
+  const { target } = event;
+  let keyCode;
+  if (target.classList.contains('key')) {
+    keyCode = target.id;
+  }
+  if (target.classList.contains('shift') || target.classList.contains('unshift')) {
+    keyCode = target.parentNode.id;
+  }
+  return keyCode;
+};
+
 const mouseDown = (event) => {
-  changeOutput(event);
+  preventDefault(event);
+  const keyCode = detectKeyCode(event);
+  if (keyCode === undefined) { return; }
+  if (keyCode.includes('Shift')) {
+    if (document.querySelector(`#${keyCode}`).classList.contains('active')) {
+      makeNotActive(keyCode);
+      makeUnshift();
+    } else {
+      makeActive(keyCode);
+      makeShift();
+    }
+  }
+  changeOutput(keyCode);
 };
 
 const mouseUp = (event) => {
-
+  preventDefault(event);
+  const keyCode = detectKeyCode(event);
+  if (keyCode === undefined) { return; }
+  if (!keyCode.includes('Shift')) {
+    makeNotActive('ShiftLeft');
+    makeNotActive('ShiftRight');
+    makeUnshift();
+  }
 };
 
 document.addEventListener('keydown', keydown);

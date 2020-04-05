@@ -7,7 +7,8 @@ export default class Key {
 
   createHtml() {
     const keyHtml = document.createElement('div');
-    keyHtml.classList.add('key', `${this.keyCode}`);
+    keyHtml.classList.add('key');
+    keyHtml.setAttribute('id', `${this.keyCode}`);
     const defaultValue = document.createElement('span');
     defaultValue.classList.add('unshift');
     if (this.keyCode === 'Tab') {
