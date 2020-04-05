@@ -6,7 +6,7 @@ const currentLayout = availableLayouts.english;
 renderApp();
 
 const output = [];
-const functionalKeys = /Escape|CapsLock|Shift|Control|Alt|ContextMenu|NumpadEnter/;
+const functionalKeys = /Escape|CapsLock|Shift|Control|Alt|ContextMenu/;
 let currentCursorPosition = 0;
 
 const preventDefault = (event) => {
@@ -14,11 +14,39 @@ const preventDefault = (event) => {
 };
 
 const makeActive = (event) => {
-  document.querySelector(`.${event.code}`).classList.add('active');
+  switch (event.type) {
+    case 'keydown':
+      document.querySelector(`.${event.code}`).classList.add('active');
+      break;
+    case 'mousedown':
+      if (event.target.classList.contains('key')) {
+        event.target.classList.add('active');
+      }
+      if (event.target.classList.contains('shift') || event.target.classList.contains('unshift')) {
+        event.target.parentNode.classList.add('active');
+      }
+      break;
+    default:
+      break;
+  }
 };
 
 const makeNotActive = (event) => {
-  document.querySelector(`.${event.code}`).classList.remove('active');
+  switch (event.type) {
+    case 'keyup':
+      document.querySelector(`.${event.code}`).classList.remove('active');
+      break;
+    case 'mouseup':
+      if (event.target.classList.contains('key')) {
+        event.target.classList.remove('active');
+      }
+      if (event.target.classList.contains('shift') || event.target.classList.contains('unshift')) {
+        event.target.parentNode.classList.remove('active');
+      }
+      break;
+    default:
+      break;
+  }
 };
 
 const makeShift = () => {
@@ -65,52 +93,58 @@ const changeCursorPosition = (action, number) => {
 };
 
 const changeOutput = (event) => {
-  const key = event.code;
-  const shiftState = +event.shiftKey;
-  let selStart = document.querySelector('textarea').selectionStart;
-  const selEnd = document.querySelector('textarea').selectionEnd;
-  const sel = selEnd - selStart;
-  if (!functionalKeys.test(event.code)) {
-    switch (key) {
-      case 'Backspace':
-        if (sel === 0) {
-          output.splice(selStart - 1, 1);
-          document.querySelector('textarea').textContent = output.join('');
+  document.querySelector('textarea').focus();
+  if (event.type === 'keydown') {
+    const key = event.code;
+    const shiftState = +event.shiftKey;
+    const selStart = document.querySelector('textarea').selectionStart;
+    const selEnd = document.querySelector('textarea').selectionEnd;
+    const sel = selEnd - selStart;
+    if (!functionalKeys.test(event.code)) {
+      switch (key) {
+        case 'Backspace':
+          if (sel === 0) {
+            output.splice(selStart - 1, 1);
+            document.querySelector('textarea').textContent = output.join('');
+            changeCursorPosition('reduce', 1);
+          } else {
+            output.splice(selStart, sel);
+            document.querySelector('textarea').textContent = output.join('');
+            changeCursorPosition('stay');
+          }
+          break;
+        case 'Delete':
+          if (sel === 0) {
+            output.splice(selStart, 1);
+            document.querySelector('textarea').textContent = output.join('');
+            changeCursorPosition('stay');
+          } else {
+            output.splice(selStart, sel);
+            document.querySelector('textarea').textContent = output.join('');
+            changeCursorPosition('stay');
+          }
+          break;
+        case 'ArrowLeft':
           changeCursorPosition('reduce', 1);
-        } else {
-          output.splice(selStart, sel);
+          break;
+        case 'ArrowUp':
+          changeCursorPosition('reduce', 1);
+          break;
+        case 'ArrowRight':
+          changeCursorPosition('increase', 1);
+          break;
+        case 'ArrowDown':
+          changeCursorPosition('increase', 1);
+          break;
+        default:
+          output.splice(selStart, sel, currentLayout[key][shiftState]);
           document.querySelector('textarea').textContent = output.join('');
-          changeCursorPosition('stay');
-        }
-        break;
-      case 'Delete':
-        if (sel === 0) {
-          output.splice(selStart, 1);
-          document.querySelector('textarea').textContent = output.join('');
-          changeCursorPosition('stay');
-        } else {
-          output.splice(selStart, sel);
-          document.querySelector('textarea').textContent = output.join('');
-          changeCursorPosition('stay');
-        }
-        break;
-      case 'ArrowLeft':
-        changeCursorPosition('reduce', 1);
-        break;
-      case 'ArrowUp':
-        changeCursorPosition('reduce', 1);
-        break;
-      case 'ArrowRight':
-        changeCursorPosition('increase', 1);
-        break;
-      case 'ArrowDown':
-        changeCursorPosition('increase', 1);
-        break;
-      default:
-        output.splice(selStart, sel, currentLayout[key][shiftState]);
-        document.querySelector('textarea').textContent = output.join('');
-        changeCursorPosition('increase', 1);
+          changeCursorPosition('increase', 1);
+      }
     }
+  }
+  if (event.type === 'mousedown') {
+    
   }
 };
 
@@ -133,7 +167,18 @@ const keypress = (event) => {
   preventDefault(event);
 };
 
+const mouseDown = (event) => {
+  makeActive(event);
+  changeOutput(event);
+};
+
+const mouseUp = (event) => {
+  makeNotActive(event);
+};
+
 document.addEventListener('keydown', keydown);
 document.addEventListener('keyup', keyup);
 document.addEventListener('keypress', keypress);
 document.querySelector('textarea').addEventListener('click', (event) => { currentCursorPosition = document.querySelector('textarea').selectionStart; });
+document.addEventListener('mousedown', mouseDown);
+document.addEventListener('mouseup', mouseUp);

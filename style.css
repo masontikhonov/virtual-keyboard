@@ -68,6 +68,11 @@ main #keyboard {
   color: indigo;
 }
 
+.key:hover {
+  background-color: darkgray;
+  cursor: pointer;
+}
+
 #keyboard #main .row-1 {
   grid-template-columns: repeat(14, 1fr) 2.15fr;
 }
@@ -99,5 +104,5 @@ main #keyboard {
 }
 
 #keyboard #numpad .row-5 {
-  grid-template-columns: repeat(2, 2.15fr);
+  grid-template-columns: 1fr;
 }
