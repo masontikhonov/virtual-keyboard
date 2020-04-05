@@ -67,7 +67,7 @@ const changeCursorPosition = (action, number) => {
 const changeOutput = (event) => {
   const key = event.code;
   const shiftState = +event.shiftKey;
-  const selStart = document.querySelector('textarea').selectionStart;
+  let selStart = document.querySelector('textarea').selectionStart;
   const selEnd = document.querySelector('textarea').selectionEnd;
   const sel = selEnd - selStart;
   if (!functionalKeys.test(event.code)) {
