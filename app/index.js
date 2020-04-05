@@ -13,11 +13,11 @@ const preventDefault = (event) => {
 };
 
 const makeActive = (event) => {
-  document.querySelector(`.c${event.keyCode}`).classList.add('active');
+  document.querySelector(`.${event.code}`).classList.add('active');
 };
 
 const makeNotActive = (event) => {
-  document.querySelector(`.c${event.keyCode}`).classList.remove('active');
+  document.querySelector(`.${event.code}`).classList.remove('active');
 };
 
 const makeShift = () => {
@@ -47,12 +47,12 @@ const makeUnshift = () => {
 };
 
 const changeOutput = (event) => {
-  const key = event.keyCode;
+  const key = event.code;
   const shiftState = +event.shiftKey;
   const selStart = document.querySelector('textarea').selectionStart;
   const selEnd = document.querySelector('textarea').selectionEnd;
   const sel = selEnd - selStart;
-  if (key === 8) {
+  if (key === 'Backspace') {
     if (sel === 0) {
       output.splice(selStart - 1, sel + 1);
       document.querySelector('textarea').textContent = output.join('');
@@ -60,7 +60,7 @@ const changeOutput = (event) => {
       output.splice(selStart, sel);
       document.querySelector('textarea').textContent = output.join('');
     }
-  } else if (key === 46) {
+  } else if (key === 'Delete') {
     if (sel === 0) {
       output.splice(selStart, sel + 1);
       document.querySelector('textarea').textContent = output.join('');
@@ -77,13 +77,13 @@ const changeOutput = (event) => {
 
 const changeCursorPosition = (event) => {
   let currentCursorPosition = document.querySelector('textarea').selectionStart;
-  if (event.keyCode === 37 && currentCursorPosition > 0) {
+  if (event.code === 'ArrowLeft' && currentCursorPosition > 0) {
     while (currentCursorPosition >= 0) {
       currentCursorPosition -= 1;
       document.querySelector('textarea').selectionStart -= 1;
     }
   }
-  if (event.keyCode === 39 && currentCursorPosition < output.length) {
+  if (event.code === 'ArrowRight' && currentCursorPosition < output.length) {
     while (currentCursorPosition <= output.length) {
       currentCursorPosition += 1;
       document.querySelector('textarea').selectionStart += 1;
@@ -93,16 +93,15 @@ const changeCursorPosition = (event) => {
 
 const keydown = (event) => {
   preventDefault(event);
-  console.log(event.key);
-  if (event.keyCode === 16) { makeShift(); }
-  if (event.keyCode === 37 || event.keyCode === 39) { changeCursorPosition(event); }
+  if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') { makeShift(); }
+  if (event.code === 'ArrowLeft' || event.code === 'ArrowRight') { changeCursorPosition(event); }
   makeActive(event);
   changeOutput(event);
 };
 
 const keyup = (event) => {
   preventDefault(event);
-  if (event.keyCode === 16) { makeUnshift(); }
+  if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') { makeUnshift(); }
   makeNotActive(event);
 };
 
