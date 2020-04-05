@@ -5,8 +5,9 @@ const currentLayout = availableLayouts.english;
 
 renderApp();
 
-const currentLayoutKeycodes = Object.keys(currentLayout);
 const output = [];
+const functionalKeys = /Escape|CapsLock|Shift|Control|Alt|ContextMenu|NumpadEnter/;
+let currentCursorPosition = 0;
 
 const preventDefault = (event) => {
   event.preventDefault();
@@ -46,55 +47,78 @@ const makeUnshift = () => {
   }
 };
 
+const changeCursorPosition = (action, number) => {
+  if (action === 'reduce' && currentCursorPosition > 0) {
+    currentCursorPosition -= number;
+    document.querySelector('textarea').selectionStart = currentCursorPosition;
+    document.querySelector('textarea').selectionEnd = currentCursorPosition;
+  }
+  if (action === 'increase' && currentCursorPosition < output.length) {
+    currentCursorPosition += number;
+    document.querySelector('textarea').selectionStart = currentCursorPosition;
+    document.querySelector('textarea').selectionEnd = currentCursorPosition;
+  }
+  if (action === 'stay') {
+    document.querySelector('textarea').selectionStart = currentCursorPosition;
+    document.querySelector('textarea').selectionEnd = currentCursorPosition;
+  }
+};
+
 const changeOutput = (event) => {
   const key = event.code;
   const shiftState = +event.shiftKey;
   const selStart = document.querySelector('textarea').selectionStart;
   const selEnd = document.querySelector('textarea').selectionEnd;
   const sel = selEnd - selStart;
-  if (key === 'Backspace') {
-    if (sel === 0) {
-      output.splice(selStart - 1, sel + 1);
-      document.querySelector('textarea').textContent = output.join('');
-    } else {
-      output.splice(selStart, sel);
-      document.querySelector('textarea').textContent = output.join('');
+  if (!functionalKeys.test(event.code)) {
+    switch (key) {
+      case 'Backspace':
+        if (sel === 0) {
+          output.splice(selStart - 1, 1);
+          document.querySelector('textarea').textContent = output.join('');
+          changeCursorPosition('reduce', 1);
+        } else {
+          output.splice(selStart, sel);
+          document.querySelector('textarea').textContent = output.join('');
+          changeCursorPosition('stay');
+        }
+        break;
+      case 'Delete':
+        if (sel === 0) {
+          output.splice(selStart, 1);
+          document.querySelector('textarea').textContent = output.join('');
+          changeCursorPosition('stay');
+        } else {
+          output.splice(selStart, sel);
+          document.querySelector('textarea').textContent = output.join('');
+          changeCursorPosition('stay');
+        }
+        break;
+      case 'ArrowLeft':
+        changeCursorPosition('reduce', 1);
+        break;
+      case 'ArrowUp':
+        changeCursorPosition('reduce', 1);
+        break;
+      case 'ArrowRight':
+        changeCursorPosition('increase', 1);
+        break;
+      case 'ArrowDown':
+        changeCursorPosition('increase', 1);
+        break;
+      default:
+        output.splice(selStart, sel, currentLayout[key][shiftState]);
+        document.querySelector('textarea').textContent = output.join('');
+        changeCursorPosition('increase', 1);
     }
-  } else if (key === 'Delete') {
-    if (sel === 0) {
-      output.splice(selStart, sel + 1);
-      document.querySelector('textarea').textContent = output.join('');
-    } else {
-      output.splice(selStart, sel);
-      document.querySelector('textarea').textContent = output.join('');
-    }
-  } else {
-    output.splice(selStart, sel, currentLayout[key][shiftState]);
-    document.querySelector('textarea').textContent = output.join('');
-    document.querySelector('textarea').selectionStart = output.length;
   }
 };
 
-const changeCursorPosition = (event) => {
-  let currentCursorPosition = document.querySelector('textarea').selectionStart;
-  if (event.code === 'ArrowLeft' && currentCursorPosition > 0) {
-    while (currentCursorPosition >= 0) {
-      currentCursorPosition -= 1;
-      document.querySelector('textarea').selectionStart -= 1;
-    }
-  }
-  if (event.code === 'ArrowRight' && currentCursorPosition < output.length) {
-    while (currentCursorPosition <= output.length) {
-      currentCursorPosition += 1;
-      document.querySelector('textarea').selectionStart += 1;
-    }
-  }
-};
 
 const keydown = (event) => {
   preventDefault(event);
   if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') { makeShift(); }
-  if (event.code === 'ArrowLeft' || event.code === 'ArrowRight') { changeCursorPosition(event); }
+  if (event.code.includes('Arrow')) { changeCursorPosition(event.code); }
   makeActive(event);
   changeOutput(event);
 };
@@ -112,3 +136,4 @@ const keypress = (event) => {
 document.addEventListener('keydown', keydown);
 document.addEventListener('keyup', keyup);
 document.addEventListener('keypress', keypress);
+document.querySelector('textarea').addEventListener('click', (event) => { currentCursorPosition = document.querySelector('textarea').selectionStart; });
