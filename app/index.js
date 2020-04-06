@@ -160,7 +160,6 @@ const detectKeyCode = (event) => {
 };
 
 const mouseDown = (event) => {
-  preventDefault(event);
   const keyCode = detectKeyCode(event);
   if (keyCode === undefined) { return; }
   if (keyCode.includes('Shift')) {
@@ -176,7 +175,6 @@ const mouseDown = (event) => {
 };
 
 const mouseUp = (event) => {
-  preventDefault(event);
   const keyCode = detectKeyCode(event);
   if (keyCode === undefined) { return; }
   if (!keyCode.includes('Shift')) {
@@ -184,6 +182,7 @@ const mouseUp = (event) => {
     makeNotActive('ShiftRight');
     makeUnshift();
   }
+  document.querySelector('textarea').focus();
 };
 
 document.addEventListener('keydown', keydown);

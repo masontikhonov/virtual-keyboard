@@ -13,4 +13,4 @@ _RSSchool task_
 
 ## Known Issues
 * __Physical and virtual Shift collision:__ Physical Shift and CapsLock works incorrect if virtual Shift was pressed and virtual char-keys was not.
-* __PreventDefault() and :active on click collision in Firefox__
+* __~~PreventDefault() and :active on click collision in Firefox~~__
