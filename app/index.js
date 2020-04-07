@@ -1,15 +1,33 @@
-import renderApp from './renderApp.js';
-import availableLayouts from './layouts.js';
+import * as renderer from './renderer.js';
+import * as settings from './config/settings.js';
 
-const currentLayout = availableLayouts.english;
+const { layouts } = settings;
+const { currentConfig } = settings;
 
-renderApp();
+
+const layoutList = Object.keys(layouts);
+let currentLayout = layouts[currentConfig.layout];
+renderer.renderApp(currentLayout);
 
 const output = [];
 const functionalKeys = /Escape|CapsLock|Shift|Control|Alt|ContextMenu/;
+const funcKeysSequence = {};
 let currentCursorPosition = 0;
 let shiftState = 0;
-let capsLockState = 0;
+let { capsLockState } = currentConfig;
+
+const switchLayout = () => {
+  const currentLayoutNumber = layoutList.indexOf(currentConfig.layout);
+  if (currentLayoutNumber < layoutList.length - 1) {
+    currentConfig.layout = layoutList[currentLayoutNumber + 1];
+  } else {
+    currentConfig.layout = layoutList[0];
+  }
+  currentLayout = layouts[currentConfig.layout];
+  settings.saveCurrentConfig(currentConfig);
+  document.getElementById('keyboard').remove();
+  renderer.createKeyboard(currentLayout);
+};
 
 const preventDefault = (event) => {
   event.preventDefault();
@@ -53,9 +71,13 @@ const makeUnshift = () => {
 
 const changeCapsLockState = () => {
   capsLockState = (capsLockState === 0) ? 1 : 0;
+  currentConfig.capsLockState = capsLockState;
+  settings.saveCurrentConfig(currentConfig);
   if (capsLockState) {
+    document.querySelector('#CapsLock').classList.add('active');
     makeShift();
   } else {
+    document.querySelector('#CapsLock').classList.remove('active');
     makeUnshift();
   }
 };
@@ -74,6 +96,41 @@ const changeCursorPosition = (action, number) => {
   if (action === 'stay') {
     document.querySelector('textarea').selectionStart = currentCursorPosition;
     document.querySelector('textarea').selectionEnd = currentCursorPosition;
+  }
+};
+
+const detectKeyCode = (event) => {
+  const { target } = event;
+  let keyCode;
+  if (target.classList.contains('key')) {
+    keyCode = target.id;
+  }
+  if (target.classList.contains('shift') || target.classList.contains('unshift')) {
+    keyCode = target.parentNode.id;
+  }
+  return keyCode;
+};
+
+const listenFuncKeys = (keyCode) => {
+  if (functionalKeys.test(keyCode)) {
+    funcKeysSequence[keyCode] = true;
+  }
+};
+
+const clearFuncKeys = (keyCode) => {
+  if (functionalKeys.test(keyCode)) {
+    delete funcKeysSequence[keyCode];
+  }
+};
+
+const performFuncAction = () => {
+  const funcKeysSequenceStr = Object.keys(funcKeysSequence).join(' + ');
+  switch (funcKeysSequenceStr) {
+    case `${settings.currentConfig.switchLayout}`:
+      switchLayout();
+      break;
+    default:
+      break;
   }
 };
 
@@ -131,32 +188,23 @@ const keydown = (event) => {
   const keyCode = event.code;
   shiftState = +event.shiftKey;
   preventDefault(event);
+  makeActive(keyCode);
   if (keyCode.includes('Shift') && !capsLockState) { makeShift(); }
   if (keyCode.includes('Shift') && capsLockState) { makeUnshift(); }
   if (keyCode.includes('Arrow')) { changeCursorPosition(keyCode); }
-  makeActive(keyCode);
   changeOutput(keyCode, shiftState);
+  listenFuncKeys(keyCode);
+  performFuncAction();
 };
 
 const keyup = (event) => {
   const keyCode = event.code;
   preventDefault(event);
+  makeNotActive(keyCode);
   if (keyCode.includes('Shift') && !capsLockState) { makeUnshift(); }
   if (keyCode.includes('Shift') && capsLockState) { makeShift(); }
   if (keyCode === 'CapsLock') { changeCapsLockState(); }
-  makeNotActive(keyCode);
-};
-
-const detectKeyCode = (event) => {
-  const { target } = event;
-  let keyCode;
-  if (target.classList.contains('key')) {
-    keyCode = target.id;
-  }
-  if (target.classList.contains('shift') || target.classList.contains('unshift')) {
-    keyCode = target.parentNode.id;
-  }
-  return keyCode;
+  clearFuncKeys(keyCode);
 };
 
 const mouseDown = (event) => {

@@ -38,7 +38,16 @@ main {
   width: 100%;
   margin-bottom: 12px;
   background-color: grey;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: 40px;
 }
+
+#service div {
+  height: 34px;
+  padding: 3px 3px;
+}
+
 main #keyboard {
   display: grid;
   grid-template-columns: 730px 178px;

@@ -15,5 +15,9 @@
         "sourceType": "module"
     },
     "rules": {
+        "import/extensions": [ "error", "never", {
+            "js": "always",
+            "json": "always"
+        }]
     }
 }
