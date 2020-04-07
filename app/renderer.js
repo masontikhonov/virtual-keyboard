@@ -47,6 +47,7 @@ export const createKeyboard = (layout) => {
   const keyboard = new Keyboard(keyboardModel, layout);
   document.querySelector('main').appendChild(keyboard.createHtml());
   if (settings.currentConfig.capsLockState) {
+    document.querySelector('#CapsLock').classList.add('active');
     const unshiftValues = document.querySelectorAll('.key> .unshift');
     for (let i = 0; i < unshiftValues.length; i += 1) {
       const element = unshiftValues[i];
