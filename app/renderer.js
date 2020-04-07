@@ -65,8 +65,12 @@ export const createKeyboard = (layout) => {
 export const renderApp = (layout) => {
   const main = document.createElement('main');
   document.querySelector('body').appendChild(main);
-  document.querySelector('main').classList.add(`${colorScheme}`);
+  document.querySelector('body').classList.add(`${colorScheme}`);
   createOutput();
   createServiceBlock();
   createKeyboard(layout);
+  const testedOn = document.createElement('main');
+  testedOn.classList.add('testedOn');
+  testedOn.textContent = 'Created and tested on Windows';
+  document.querySelector('main').appendChild(testedOn);
 };
