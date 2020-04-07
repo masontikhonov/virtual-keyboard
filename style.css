@@ -51,6 +51,7 @@ main {
 main #keyboard {
   display: grid;
   grid-template-columns: 730px 178px;
+  grid-template-rows: 230px auto;
   column-gap: 12px;
 }
 .row {
@@ -173,6 +174,7 @@ main {
 main #keyboard {
   display: grid;
   grid-template-columns: 730px 178px;
+  grid-template-rows: 230px auto;
   column-gap: 12px;
 }
 .row {

@@ -46,6 +46,10 @@ const createServiceBlock = () => {
 export const createKeyboard = (layout) => {
   const keyboard = new Keyboard(keyboardModel, layout);
   document.querySelector('main').appendChild(keyboard.createHtml());
+  const testedOn = document.createElement('div');
+  testedOn.classList.add('testedOn');
+  testedOn.textContent = 'Created and tested on Windows';
+  document.querySelector('#keyboard').appendChild(testedOn);
   if (settings.currentConfig.capsLockState) {
     document.querySelector('#CapsLock').classList.add('active');
     const unshiftValues = document.querySelectorAll('.key> .unshift');
@@ -69,8 +73,4 @@ export const renderApp = (layout) => {
   createOutput();
   createServiceBlock();
   createKeyboard(layout);
-  const testedOn = document.createElement('main');
-  testedOn.classList.add('testedOn');
-  testedOn.textContent = 'Created and tested on Windows';
-  document.querySelector('main').appendChild(testedOn);
 };
