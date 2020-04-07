@@ -187,24 +187,28 @@ const changeOutput = (keyCode) => {
 const keydown = (event) => {
   const keyCode = event.code;
   shiftState = +event.shiftKey;
-  preventDefault(event);
-  makeActive(keyCode);
-  if (keyCode.includes('Shift') && !capsLockState) { makeShift(); }
-  if (keyCode.includes('Shift') && capsLockState) { makeUnshift(); }
-  if (keyCode.includes('Arrow')) { changeCursorPosition(keyCode); }
-  changeOutput(keyCode, shiftState);
-  listenFuncKeys(keyCode);
-  performFuncAction();
+  if (keyCode in currentLayout) {
+    preventDefault(event);
+    makeActive(keyCode);
+    if (keyCode.includes('Shift') && !capsLockState) { makeShift(); }
+    if (keyCode.includes('Shift') && capsLockState) { makeUnshift(); }
+    if (keyCode.includes('Arrow')) { changeCursorPosition(keyCode); }
+    changeOutput(keyCode, shiftState);
+    listenFuncKeys(keyCode);
+    performFuncAction();
+  }
 };
 
 const keyup = (event) => {
   const keyCode = event.code;
-  preventDefault(event);
-  makeNotActive(keyCode);
-  if (keyCode.includes('Shift') && !capsLockState) { makeUnshift(); }
-  if (keyCode.includes('Shift') && capsLockState) { makeShift(); }
-  if (keyCode === 'CapsLock') { changeCapsLockState(); }
-  clearFuncKeys(keyCode);
+  if (keyCode in currentLayout) {
+    preventDefault(event);
+    makeNotActive(keyCode);
+    if (keyCode.includes('Shift') && !capsLockState) { makeUnshift(); }
+    if (keyCode.includes('Shift') && capsLockState) { makeShift(); }
+    if (keyCode === 'CapsLock') { changeCapsLockState(); }
+    clearFuncKeys(keyCode);
+  }
 };
 
 const mouseDown = (event) => {
