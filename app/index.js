@@ -14,6 +14,7 @@ const functionalKeys = /Escape|CapsLock|Shift|Control|Alt|ContextMenu/;
 const funcKeysSequence = {};
 let currentCursorPosition = 0;
 let shiftState = 0;
+let lastShift = 0;
 let { capsLockState } = currentConfig;
 
 const switchLayout = () => {
@@ -25,6 +26,7 @@ const switchLayout = () => {
   }
   currentLayout = layouts[currentConfig.layout];
   settings.saveCurrentConfig(currentConfig);
+  document.querySelector("#service > div.currentLayout").textContent = `Layout: ${currentConfig.layout}`;
   document.getElementById('keyboard').remove();
   renderer.createKeyboard(currentLayout);
 };
@@ -52,7 +54,6 @@ const makeShift = () => {
     const element = shiftValues[i];
     element.classList.remove('hidden');
   }
-  shiftState = 1;
 };
 
 const makeUnshift = () => {
@@ -66,18 +67,28 @@ const makeUnshift = () => {
     const element = unshiftValues[i];
     element.classList.remove('hidden');
   }
-  shiftState = 0;
 };
 
 const changeCapsLockState = () => {
   capsLockState = (capsLockState === 0) ? 1 : 0;
   currentConfig.capsLockState = capsLockState;
   settings.saveCurrentConfig(currentConfig);
+  const capsLockStateText = (capsLockState) ? 'on' : 'off';
+  document.querySelector("#service > div.capsLockState").textContent = `Caps Lock: ${capsLockStateText}`;
   if (capsLockState) {
     document.querySelector('#CapsLock').classList.add('active');
     makeShift();
   } else {
     document.querySelector('#CapsLock').classList.remove('active');
+    makeUnshift();
+  }
+};
+
+const changeShiftState = () => {
+  shiftState = (shiftState === 0) ? 1 : 0;
+  if ((shiftState && !capsLockState) || (!shiftState && capsLockState)) {
+    makeShift();
+  } else {
     makeUnshift();
   }
 };
@@ -125,9 +136,14 @@ const clearFuncKeys = (keyCode) => {
 
 const performFuncAction = () => {
   const funcKeysSequenceStr = Object.keys(funcKeysSequence).join(' + ');
+  const pressedFuncKeys = Object.keys(funcKeysSequence);
   switch (funcKeysSequenceStr) {
     case `${settings.currentConfig.switchLayout}`:
       switchLayout();
+      for (let i = 0; i < pressedFuncKeys.length; i += 1) {
+        const funcKey = pressedFuncKeys[i];
+        delete funcKeysSequence[funcKey];
+      }
       break;
     default:
       break;
@@ -180,6 +196,10 @@ const changeOutput = (keyCode) => {
         output.splice(selStart, sel, currentLayout[keyCode][charShiftType]);
         document.querySelector('textarea').textContent = output.join('');
         changeCursorPosition('increase', 1);
+        if (lastShift) {
+          lastShift = 0;
+          changeShiftState();
+        }
     }
   }
 };
@@ -193,7 +213,7 @@ const keydown = (event) => {
     if (keyCode.includes('Shift') && !capsLockState) { makeShift(); }
     if (keyCode.includes('Shift') && capsLockState) { makeUnshift(); }
     if (keyCode.includes('Arrow')) { changeCursorPosition(keyCode); }
-    changeOutput(keyCode, shiftState);
+    changeOutput(keyCode);
     listenFuncKeys(keyCode);
     performFuncAction();
   }
@@ -201,6 +221,7 @@ const keydown = (event) => {
 
 const keyup = (event) => {
   const keyCode = event.code;
+  shiftState = +event.shiftKey;
   if (keyCode in currentLayout) {
     preventDefault(event);
     makeNotActive(keyCode);
@@ -214,26 +235,19 @@ const keyup = (event) => {
 const mouseDown = (event) => {
   const keyCode = detectKeyCode(event);
   if (keyCode === undefined) { return; }
+  if (keyCode === 'CapsLock') { changeCapsLockState(); }
   if (keyCode.includes('Shift')) {
-    if (document.querySelector(`#${keyCode}`).classList.contains('active')) {
-      makeNotActive(keyCode);
-      makeUnshift();
-    } else {
-      makeActive(keyCode);
-      makeShift();
-    }
+    changeShiftState();
+    lastShift = 1;
   }
   changeOutput(keyCode);
+  listenFuncKeys(keyCode);
+  performFuncAction();
 };
 
 const mouseUp = (event) => {
   const keyCode = detectKeyCode(event);
   if (keyCode === undefined) { return; }
-  if (!keyCode.includes('Shift')) {
-    makeNotActive('ShiftLeft');
-    makeNotActive('ShiftRight');
-    makeUnshift();
-  }
   document.querySelector('textarea').focus();
 };
 
