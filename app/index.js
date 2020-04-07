@@ -26,7 +26,7 @@ const switchLayout = () => {
   }
   currentLayout = layouts[currentConfig.layout];
   settings.saveCurrentConfig(currentConfig);
-  document.querySelector("#service > div.currentLayout").textContent = `Layout: ${currentConfig.layout}`;
+  document.querySelector('#service > div.currentLayout').textContent = `Layout: ${currentConfig.layout}`;
   document.getElementById('keyboard').remove();
   renderer.createKeyboard(currentLayout);
 };
@@ -74,7 +74,7 @@ const changeCapsLockState = () => {
   currentConfig.capsLockState = capsLockState;
   settings.saveCurrentConfig(currentConfig);
   const capsLockStateText = (capsLockState) ? 'on' : 'off';
-  document.querySelector("#service > div.capsLockState").textContent = `Caps Lock: ${capsLockStateText}`;
+  document.querySelector('#service > div.capsLockState').textContent = `Caps Lock: ${capsLockStateText}`;
   if (capsLockState) {
     document.querySelector('#CapsLock').classList.add('active');
     makeShift();

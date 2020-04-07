@@ -18,6 +18,12 @@
         "import/extensions": [ "error", "never", {
             "js": "always",
             "json": "always"
-        }]
+        }],
+        "prefer-destructuring": ["error", {
+            "array": false,
+            "object": false
+          }, {
+            "enforceForRenamedProperties": false
+          }]
     }
 }
