@@ -1,0 +1,183 @@
+@import "https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css"
+  all;
+@import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap");
+
+.hidden {
+  display: none;
+}
+
+ body.dark {
+  background-color: black;
+  width: 100%;
+  font-family: "PT Sans", "Verdana", sans-serif;
+}
+
+main {
+  width: 920px;
+  margin: 0 auto;
+  margin-top: 36px;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 184px 52px 230px;
+}
+
+.dark #output {
+  width: 100%;
+  margin-bottom: 18px;
+  background-color: gainsboro;
+}
+
+#output textarea {
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  padding: 6px 6px;
+  border: none;
+}
+
+.dark #service {
+  width: 100%;
+  margin-bottom: 12px;
+  background-color: grey;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: 40px;
+}
+
+#service div {
+  height: 34px;
+  padding: 3px 3px;
+}
+
+main #keyboard {
+  display: grid;
+  grid-template-columns: 730px 178px;
+  grid-template-rows: 230px auto;
+  column-gap: 12px;
+}
+.row {
+  display: grid;
+  column-gap: 6px;
+  margin-bottom: 6px;
+}
+
+.dark .key {
+  display: inline;
+  width: calc(100% - 6px);
+  height: 34px;
+  padding: 3px 3px;
+  background-color: gray;
+  border-radius: 2px;
+  text-align: center;
+  font-size: 18px;
+  line-height: 34px;
+  font-weight: 700;
+}
+
+.dark .key.active {
+  background-color: hotpink;
+  color: indigo;
+}
+
+.dark .key:hover {
+  background-color: darkgray;
+  cursor: pointer;
+}
+
+.dark .key:active {
+  background-color: hotpink;
+  color: indigo;
+}
+
+#keyboard #main .row-1 {
+  grid-template-columns: repeat(14, 1fr) 2.15fr;
+}
+
+#keyboard #main .row-2 {
+  grid-template-columns: 1.575fr repeat(13, 1fr) 1.575fr;
+}
+
+#keyboard #main .row-3 {
+  grid-template-columns: 2.45fr repeat(11, 1fr) 3fr;
+}
+
+#keyboard #main .row-4 {
+  grid-template-columns: 3fr repeat(11, 1fr) 2.45fr;
+}
+
+#keyboard #main .row-5 {
+  grid-template-columns: repeat(2, 2fr) 6.75fr repeat(5, 1fr) 1.3fr;
+}
+
+#keyboard #numpad .row-1,
+#keyboard #numpad .row-2,
+#keyboard #numpad .row-3 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+#keyboard #numpad .row-4 {
+  grid-template-columns: 2.15fr repeat(2, 1fr);
+}
+
+#keyboard #numpad .row-5 {
+  grid-template-columns: 1fr;
+}
+
+.dark .testedOn {
+  text-align: center;
+  color: #fff;
+}
+
+body.light {
+  background-color: white;
+  width: 100%;
+  font-family: "PT Sans", "Verdana", sans-serif;
+}
+
+.light #output {
+  width: 100%;
+  margin-bottom: 18px;
+  background-color: gainsboro;
+  border: 1px solid black;
+}
+
+.light #service {
+  width: 100%;
+  margin-bottom: 12px;
+  background-color: white;
+  border: 1px solid black;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: 40px;
+}
+
+.light .key {
+  display: inline;
+  width: calc(100% - 8px);
+  height: 32px;
+  padding: 3px 3px;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 2px;
+  text-align: center;
+  font-size: 18px;
+  line-height: 32px;
+  font-weight: 700;
+}
+
+.light .key.active {
+  background-color: skyblue;
+}
+
+.light .key:hover {
+  background-color: whitesmoke;
+  cursor: pointer;
+}
+
+.light .key:active {
+  background-color: skyblue;
+}
+
+.light .testedOn {
+  text-align: center;
+  color: black;
+}
